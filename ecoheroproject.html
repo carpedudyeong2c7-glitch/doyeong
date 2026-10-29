@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>지구를 구하는 도덕 탐험대: 에코 히어로 프로젝트</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans KR"', 'sans-serif'],
+            serif: ['"Gowun Batang"', 'serif']
+          },
+          colors: {
+            ecoGreen: '#10b981',
+            ecoDark: '#064e3b',
+            ecoEarth: '#92400e',
+            ecoSky: '#0284c7'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #e0f2fe 0%, #ecfdf5 50%, #fef3c7 100%);
+      min-height: 100vh;
+      user-select: none;
+    }
+    .cert-font {
+      font-family: 'Gowun Batang', serif;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    .pulse-glow {
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); transform: scale(1); }
+      50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.8); transform: scale(1.03); }
+    }
+    canvas {
+      touch-action: none;
+    }
+    @media print {
+      body * { visibility: hidden; }
+      #certificate-print-area, #certificate-print-area * { visibility: visible; }
+      #certificate-print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-emerald-100 shadow-sm px-4 py-3">
+    <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="app.showScreen('map')">
+        <div class="bg-gradient-to-tr from-emerald-500 to-teal-600 text-white p-2.5 rounded-2xl shadow-md">
+          <i class="fa-solid font-bold fa-earth-americas text-xl"></i>
+        </div>
+        <div>
+          <h1 class="font-black text-lg md:text-xl text-emerald-900 tracking-tight leading-tight">
+            에코 히어로 프로젝트 <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">중2 도덕</span>
+          </h1>
+          <p class="text-xs text-slate-500 font-medium">생태 윤리와 지구 환경 위기 극복</p>
+        </div>
+      </div>
+
+      <!-- Student Badge & Controls -->
+      <div id="header-user-info" class="hidden flex items-center space-x-3 bg-emerald-50/80 px-3 py-1.5 rounded-xl border border-emerald-200">
+        <div class="text-xs text-slate-700 font-bold">
+          <i class="fa-solid fa-user-graduate text-emerald-600 mr-1"></i>
+          <span id="nav-student-name">김도덕</span> (<span id="nav-student-grade">2</span>학년 <span id="nav-student-class">3</span>반)
+        </div>
+        <div class="h-4 w-px bg-emerald-200"></div>
+        <div class="flex items-center space-x-1" id="nav-badges">
+          <!-- Stage Badges will be updated dynamically -->
+        </div>
+        <button onclick="app.toggleAudio()" id="audio-btn" class="p-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-600 text-sm shadow-sm transition">
+          <i class="fa-solid fa-volume-high text-emerald-600"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-grow max-w-6xl w-full mx-auto p-3 sm:p-6 flex flex-col justify-center">
+
+    <!-- 1. INTRO / REGISTRATION SCREEN -->
+    <section id="screen-intro" class="w-full">
+      <div class="max-w-3xl mx-auto glass-card rounded-3xl p-6 sm:p-10 shadow-xl border border-white/80">
+        <div class="text-center mb-8">
+          <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">중학교 2학년 도덕 탐험 활동</span>
+          <h2 class="text-3xl sm:text-4xl font-black text-slate-800 mt-3 mb-2 leading-snug">
+            🌏 지구를 구하는 도덕 탐험대
+          </h2>
+          <p class="text-slate-600 text-sm sm:text-base">
+            지구 곳곳의 환경 위기 현장을 직접 탐험하고, 도덕적 책임을 실천하여 <br class="hidden sm:inline">
+            <strong class="text-emerald-700">에코 히어로 수료증</strong>을 획득해 보세요!
+          </p>
+        </div>
+
+        <!-- Student Info Form -->
+        <form onsubmit="app.startExploration(event)" class="space-y-5 bg-white/70 p-6 rounded-2xl border border-emerald-100 shadow-inner">
+          <h3 class="font-bold text-slate-800 text-base flex items-center">
+            <i class="fa-solid fa-id-card text-emerald-600 mr-2"></i> 탐험대원 정보 입력
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">이름</label>
+              <input type="text" id="input-name" required placeholder="예: 홍길동" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium text-slate-800">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">학년</label>
+              <select id="input-grade" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium text-slate-800">
+                <option value="2">중학교 2학년</option>
+                <option value="1">중학교 1학년</option>
+                <option value="3">중학교 3학년</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">반</label>
+              <input type="number" id="input-class" required min="1" max="20" value="1" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium text-slate-800">
+            </div>
+          </div>
+
+          <!-- Educational Core Concepts Summary -->
+          <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200/60 text-xs text-slate-700 space-y-1.5">
+            <div class="font-bold text-emerald-900 flex items-center text-sm mb-1">
+              <i class="fa-solid fa-book-bookmark text-emerald-600 mr-1.5"></i> 이번 단원의 핵심 도덕 핵심어
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center pt-1">
+              <div class="bg-white p-2 rounded-lg border border-emerald-100 font-semibold text-emerald-800">🌱 생태 윤리</div>
+              <div class="bg-white p-2 rounded-lg border border-emerald-100 font-semibold text-emerald-800">🤝 세대 간 정의</div>
+              <div class="bg-white p-2 rounded-lg border border-emerald-100 font-semibold text-emerald-800">🐢 생명 존중</div>
+              <div class="bg-white p-2 rounded-lg border border-emerald-100 font-semibold text-emerald-800">🔄 자원 순환</div>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold text-lg rounded-2xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center space-x-2">
+            <span>도덕 탐험 시작하기</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- 2. WORLD MAP STAGE SELECTOR -->
+    <section id="screen-map" class="hidden w-full space-y-6">
+      <div class="text-center max-w-2xl mx-auto space-y-1">
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-800">🗺️ 세계 환경 위기 현장 지도</h2>
+        <p class="text-slate-600 text-sm">해당 지역의 스테이지를 선택하여 환경 문제를 해결하고 도덕적 가치를 배워보세요.</p>
+      </div>
+
+      <!-- Overall Progress Bar -->
+      <div class="max-w-xl mx-auto glass-card p-4 rounded-2xl shadow-sm border border-emerald-100 space-y-2">
+        <div class="flex justify-between text-xs font-bold">
+          <span class="text-emerald-800">전체 달성도</span>
+          <span id="map-progress-text" class="text-emerald-600">0 / 5 완료 (0%)</span>
+        </div>
+        <div class="w-full bg-slate-200 h-3.5 rounded-full overflow-hidden p-0.5">
+          <div id="map-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- World Map Hotspots Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
+        
+        <!-- Stage 1 Card -->
+        <div onclick="app.loadStage(1)" class="group cursor-pointer glass-card rounded-3xl p-5 hover:shadow-xl hover:border-amber-300 transition transform hover:-translate-y-1 relative overflow-hidden">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-3 py-1 bg-amber-100 text-amber-800 font-black text-xs rounded-full">Stage 1</span>
+            <span id="badge-stg-1" class="text-slate-300 text-lg"><i class="fa-solid fa-circle-check"></i></span>
+          </div>
+          <div class="text-amber-600 text-4xl mb-3"><i class="fa-solid fa-sun-plant-wilt"></i></div>
+          <h3 class="font-bold text-lg text-slate-800 group-hover:text-amber-700 transition">사막화 방지 프로젝트</h3>
+          <p class="text-xs text-slate-500 mt-1 line-clamp-2">메마른 사막 지대에 풀과 나무를 심고 방풍림을 세워 사막화를 저지하세요.</p>
+          <div class="mt-4 flex items-center text-xs font-bold text-amber-700">
+            <span>아시아/사하라 사막</span> <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+          </div>
+        </div>
+
+        <!-- Stage 2 Card -->
+        <div onclick="app.loadStage(2)" class="group cursor-pointer glass-card rounded-3xl p-5 hover:shadow-xl hover:border-emerald-300 transition transform hover:-translate-y-1 relative overflow-hidden">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-3 py-1 bg-emerald-100 text-emerald-800 font-black text-xs rounded-full">Stage 2</span>
+            <span id="badge-stg-2" class="text-slate-300 text-lg"><i class="fa-solid fa-circle-check"></i></span>
+          </div>
+          <div class="text-emerald-600 text-4xl mb-3"><i class="fa-solid fa-tree"></i></div>
+          <h3 class="font-bold text-lg text-slate-800 group-hover:text-emerald-700 transition">열대림 무분별한 벌목 저지</h3>
+          <p class="text-xs text-slate-500 mt-1 line-clamp-2">아마존 파괴 벌목꾼들을 환경 감시원으로 설득하고 산림 보호 구역을 만드세요.</p>
+          <div class="mt-4 flex items-center text-xs font-bold text-emerald-700">
+            <span>남메리카 아마존</span> <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+          </div>
+        </div>
+
+        <!-- Stage 3 Card -->
+        <div onclick="app.loadStage(3)" class="group cursor-pointer glass-card rounded-3xl p-5 hover:shadow-xl hover:border-sky-300 transition transform hover:-translate-y-1 relative overflow-hidden">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-3 py-1 bg-sky-100 text-sky-800 font-black text-xs rounded-full">Stage 3</span>
+            <span id="badge-stg-3" class="text-slate-300 text-lg"><i class="fa-solid fa-circle-check"></i></span>
+          </div>
+          <div class="text-sky-600 text-4xl mb-3"><i class="fa-solid fa-otter"></i></div>
+          <h3 class="font-bold text-lg text-slate-800 group-hover:text-sky-700 transition">해양 쓰레기 & 바다거북 구출</h3>
+          <p class="text-xs text-slate-500 mt-1 line-clamp-2">바다 속 플라스틱 쓰레기를 수거하고 기름이 묻은 바다거북을 세척해 주세요.</p>
+          <div class="mt-4 flex items-center text-xs font-bold text-sky-700">
+            <span>해양 생태계</span> <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+          </div>
+        </div>
+
+        <!-- Stage 4 Card -->
+        <div onclick="app.loadStage(4)" class="group cursor-pointer glass-card rounded-3xl p-5 hover:shadow-xl hover:border-indigo-300 transition transform hover:-translate-y-1 relative overflow-hidden">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-3 py-1 bg-indigo-100 text-indigo-800 font-black text-xs rounded-full">Stage 4</span>
+            <span id="badge-stg-4" class="text-slate-300 text-lg"><i class="fa-solid fa-circle-check"></i></span>
+          </div>
+          <div class="text-indigo-600 text-4xl mb-3"><i class="fa-solid fa-shirt"></i></div>
+          <h3 class="font-bold text-lg text-slate-800 group-hover:text-indigo-700 transition">쓰레기섬 & 패스트 패션 극복</h3>
+          <p class="text-xs text-slate-500 mt-1 line-clamp-2">과도한 의류 소비를 줄이고 기부 및 업사이클링으로 쓰레기섬 크기를 줄이세요.</p>
+          <div class="mt-4 flex items-center text-xs font-bold text-indigo-700">
+            <span>태평양 쓰레기섬</span> <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+          </div>
+        </div>
+
+        <!-- Stage 5 Card -->
+        <div onclick="app.loadStage(5)" class="group cursor-pointer glass-card rounded-3xl p-5 hover:shadow-xl hover:border-teal-300 transition transform hover:-translate-y-1 relative overflow-hidden md:col-span-2 lg:col-span-1">
+          <div class="flex justify-between items-start mb-3">
+            <span class="px-3 py-1 bg-teal-100 text-teal-800 font-black text-xs rounded-full">Stage 5</span>
+            <span id="badge-stg-5" class="text-slate-300 text-lg"><i class="fa-solid fa-circle-check"></i></span>
+          </div>
+          <div class="text-teal-600 text-4xl mb-3"><i class="fa-solid fa-building-wheat"></i></div>
+          <h3 class="font-bold text-lg text-slate-800 group-hover:text-teal-700 transition">훈데르트바서 에코 디자인</h3>
+          <p class="text-xs text-slate-500 mt-1 line-clamp-2">자연친화적 건축가 훈데르트바서의 철학을 바탕으로 나만의 에코 건축물을 디자인하세요.</p>
+          <div class="mt-4 flex items-center text-xs font-bold text-teal-700">
+            <span>에코 아키텍처 스튜디오</span> <i class="fa-solid fa-chevron-right ml-1 text-xs"></i>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Final Certificate Button -->
+      <div id="map-certificate-btn-container" class="text-center pt-4 hidden">
+        <button onclick="app.showCertificate()" class="pulse-glow px-8 py-4 bg-gradient-to-r from-amber-500 via-emerald-600 to-teal-600 text-white font-black text-lg rounded-2xl shadow-xl hover:scale-105 transition transform flex items-center justify-center mx-auto space-x-3">
+          <i class="fa-solid fa-award text-yellow-300 text-2xl"></i>
+          <span>모든 미션 완료! 에코 히어로 수료증 확인하기</span>
+        </button>
+      </div>
+    </section>
+
+
+    <!-- STAGE 1: DESERTIFICATION MINIGAME -->
+    <section id="screen-stage1" class="hidden w-full max-w-4xl mx-auto space-y-4">
+      <div class="flex justify-between items-center glass-card p-4 rounded-2xl">
+        <div>
+          <span class="text-xs font-bold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full">Stage 1</span>
+          <h2 class="text-xl font-black text-slate-800 inline-block ml-2">사막화 방지 녹화 미션</h2>
+        </div>
+        <button onclick="app.showScreen('map')" class="text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+          <i class="fa-solid fa-map mr-1"></i> 지도 이동
+        </button>
+      </div>
+
+      <!-- Canvas Box & Tool Controls -->
+      <div class="glass-card rounded-3xl p-4 sm:p-6 space-y-4">
+        <div class="flex flex-wrap justify-between items-center gap-2 text-sm font-bold bg-amber-50/80 p-3 rounded-xl border border-amber-200">
+          <div class="flex items-center space-x-2">
+            <span class="text-amber-800">녹화 진행률:</span>
+            <div class="w-36 bg-slate-200 h-3 rounded-full overflow-hidden">
+              <div id="stg1-progress-bar" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%;"></div>
+            </div>
+            <span id="stg1-progress-text" class="text-amber-900 font-extrabold">0%</span>
+          </div>
+          <div class="text-xs text-amber-700">
+            <i class="fa-solid fa-circle-info mr-1"></i> 흙을 클릭해 씨앗을 심고, 물을 주어 푸른 숲을 만드세요!
+          </div>
+        </div>
+
+        <!-- Tool Selection Buttons -->
+        <div class="flex justify-center space-x-3">
+          <button id="stg1-tool-seed" onclick="stg1.selectTool('seed')" class="px-4 py-2 rounded-xl text-xs font-extrabold flex items-center space-x-1.5 bg-amber-600 text-white shadow-md border-2 border-amber-700">
+            <i class="fa-solid fa-seedling"></i> <span>🌱 씨앗 심기</span>
+          </button>
+          <button id="stg1-tool-water" onclick="stg1.selectTool('water')" class="px-4 py-2 rounded-xl text-xs font-extrabold flex items-center space-x-1.5 bg-white text-slate-700 border border-slate-300 hover:bg-sky-50">
+            <i class="fa-solid fa-droplet text-sky-500"></i> <span>💧 물주기</span>
+          </button>
+          <button id="stg1-tool-tree" onclick="stg1.selectTool('tree')" class="px-4 py-2 rounded-xl text-xs font-extrabold flex items-center space-x-1.5 bg-white text-slate-700 border border-slate-300 hover:bg-emerald-50">
+            <i class="fa-solid fa-tree text-emerald-600"></i> <span>🛡️ 방풍림 심기</span>
+          </button>
+        </div>
+
+        <div class="relative w-full rounded-2xl overflow-hidden border-2 border-amber-200 shadow-inner bg-amber-900/10">
+          <canvas id="canvas-stage1" width="800" height="420" class="w-full h-auto cursor-pointer"></canvas>
+          <div id="stg1-alert" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-500/90 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg hidden animate-bounce">
+            ⚠️ 모래바람이 다가옵니다! 방풍림을 세워 바람을 차단하세요!
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- STAGE 2: RAINFOREST LOGGING MINIGAME -->
+    <section id="screen-stage2" class="hidden w-full max-w-4xl mx-auto space-y-4">
+      <div class="flex justify-between items-center glass-card p-4 rounded-2xl">
+        <div>
+          <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full">Stage 2</span>
+          <h2 class="text-xl font-black text-slate-800 inline-block ml-2">아마존 열대림 보호 미션</h2>
+        </div>
+        <button onclick="app.showScreen('map')" class="text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+          <i class="fa-solid fa-map mr-1"></i> 지도 이동
+        </button>
+      </div>
+
+      <div class="glass-card rounded-3xl p-4 sm:p-6 space-y-4">
+        <div class="flex flex-wrap justify-between items-center gap-2 text-sm font-bold bg-emerald-50/80 p-3 rounded-xl border border-emerald-200">
+          <div class="flex items-center space-x-2">
+            <span class="text-emerald-900">산림 건강도:</span>
+            <div class="w-36 bg-slate-200 h-3 rounded-full overflow-hidden">
+              <div id="stg2-progress-bar" class="bg-emerald-600 h-full transition-all duration-300" style="width: 50%;"></div>
+            </div>
+            <span id="stg2-progress-text" class="text-emerald-900 font-extrabold">50%</span>
+          </div>
+          <div class="text-xs text-emerald-800">
+            <i class="fa-solid fa-circle-info mr-1"></i> 벌목꾼을 클릭하여 설득(감시원 전환)하고, 밑둥을 클릭해 묘목을 심으세요!
+          </div>
+        </div>
+
+        <div class="relative w-full rounded-2xl overflow-hidden border-2 border-emerald-200 shadow-inner">
+          <canvas id="canvas-stage2" width="800" height="420" class="w-full h-auto cursor-pointer"></canvas>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- STAGE 3: OCEAN POLLUTION & TURTLE RESCUE -->
+    <section id="screen-stage3" class="hidden w-full max-w-4xl mx-auto space-y-4">
+      <div class="flex justify-between items-center glass-card p-4 rounded-2xl">
+        <div>
+          <span class="text-xs font-bold bg-sky-100 text-sky-800 px-2.5 py-1 rounded-full">Stage 3</span>
+          <h2 class="text-xl font-black text-slate-800 inline-block ml-2">해양 생태계 & 바다거북 구출</h2>
+        </div>
+        <button onclick="app.showScreen('map')" class="text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+          <i class="fa-solid fa-map mr-1"></i> 지도 이동
+        </button>
+      </div>
+
+      <div class="glass-card rounded-3xl p-4 sm:p-6 space-y-4">
+        <!-- Sub phase Indicator -->
+        <div class="flex justify-between items-center bg-sky-50/90 p-3 rounded-xl border border-sky-200">
+          <div class="text-xs font-extrabold text-sky-900" id="stg3-phase-title">
+            <i class="fa-solid fa-broom mr-1"></i> 1단계: 해양 부유 쓰레기 수거 (남은 쓰레기: <span id="stg3-trash-count">8</span>개)
+          </div>
+          <div id="stg3-tool-controls" class="hidden flex space-x-2">
+            <button id="stg3-btn-scissors" onclick="stg3.setTool('scissors')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white shadow">
+              ✂️ 그물 끊기
+            </button>
+            <button id="stg3-btn-sponge" onclick="stg3.setTool('sponge')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-700 border hover:bg-sky-50">
+              🧽 기름 닦기
+            </button>
+            <button id="stg3-btn-feed" onclick="stg3.setTool('feed')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-700 border hover:bg-emerald-50">
+              🌿 먹이 주기
+            </button>
+          </div>
+        </div>
+
+        <div class="relative w-full rounded-2xl overflow-hidden border-2 border-sky-200 shadow-inner">
+          <canvas id="canvas-stage3" width="800" height="420" class="w-full h-auto cursor-pointer"></canvas>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- STAGE 4: TRASH ISLAND & FAST FASHION -->
+    <section id="screen-stage4" class="hidden w-full max-w-4xl mx-auto space-y-4">
+      <div class="flex justify-between items-center glass-card p-4 rounded-2xl">
+        <div>
+          <span class="text-xs font-bold bg-indigo-100 text-indigo-800 px-2.5 py-1 rounded-full">Stage 4</span>
+          <h2 class="text-xl font-black text-slate-800 inline-block ml-2">쓰레기섬 & 패스트패션 분류 미션</h2>
+        </div>
+        <button onclick="app.showScreen('map')" class="text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+          <i class="fa-solid fa-map mr-1"></i> 지도 이동
+        </button>
+      </div>
+
+      <div class="glass-card rounded-3xl p-6 space-y-6">
+        <!-- Garbage Patch Visual Meter -->
+        <div class="bg-indigo-50/80 p-4 rounded-2xl border border-indigo-200 text-center space-y-2">
+          <div class="flex justify-between text-xs font-bold text-indigo-900">
+            <span>태평양 쓰레기섬 축소율</span>
+            <span id="stg4-score-text">0 / 8 분류 완료</span>
+          </div>
+          <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden">
+            <div id="stg4-progress-bar" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-full transition-all duration-300" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Current Conveyor Item Display -->
+        <div id="stg4-item-card" class="max-w-md mx-auto bg-white p-6 rounded-3xl border-2 border-indigo-200 shadow-xl text-center space-y-3 transform transition">
+          <div id="stg4-item-icon" class="text-6xl text-indigo-600"><i class="fa-solid fa-shirt"></i></div>
+          <h3 id="stg4-item-title" class="font-extrabold text-xl text-slate-800">단추 한 개 빠진 멀쩡한 겨울 코트</h3>
+          <p id="stg4-item-desc" class="text-xs text-slate-500">약간의 수선만 거치면 충분히 더 입을 수 있는 양호한 상태입니다.</p>
+        </div>
+
+        <!-- Bin Choices -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+          <button onclick="stg4.sortItem('donate')" class="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-300 hover:bg-emerald-100 text-emerald-900 font-bold text-sm transition transform active:scale-95 flex flex-col items-center space-y-2">
+            <span class="text-2xl">🎁</span>
+            <span>의류 기부하기</span>
+            <span class="text-[10px] text-emerald-700 font-normal">(상태가 양호한 옷)</span>
+          </button>
+          
+          <button onclick="stg4.sortItem('upcycle')" class="p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 hover:bg-amber-100 text-amber-900 font-bold text-sm transition transform active:scale-95 flex flex-col items-center space-y-2">
+            <span class="text-2xl">♻️</span>
+            <span>업사이클링 재활용</span>
+            <span class="text-[10px] text-amber-700 font-normal">(찢어지거나 낡은 옷)</span>
+          </button>
+
+          <button onclick="stg4.sortItem('reject')" class="p-4 rounded-2xl bg-rose-50 border-2 border-rose-300 hover:bg-rose-100 text-rose-900 font-bold text-sm transition transform active:scale-95 flex flex-col items-center space-y-2">
+            <span class="text-2xl">🛑</span>
+            <span>구매 절제하기</span>
+            <span class="text-[10px] text-rose-700 font-normal">(유행성 충동 구매 유혹)</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- STAGE 5: HUNDERTWASSER ECO ARCHITECTURE STUDIO -->
+    <section id="screen-stage5" class="hidden w-full max-w-5xl mx-auto space-y-4">
+      <div class="flex justify-between items-center glass-card p-4 rounded-2xl">
+        <div>
+          <span class="text-xs font-bold bg-teal-100 text-teal-800 px-2.5 py-1 rounded-full">Stage 5</span>
+          <h2 class="text-xl font-black text-slate-800 inline-block ml-2">훈데르트바서 에코 디자인 스튜디오</h2>
+        </div>
+        <button onclick="app.showScreen('map')" class="text-xs font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+          <i class="fa-solid fa-map mr-1"></i> 지도 이동
+        </button>
+      </div>
+
+      <!-- Philosophy Info Card -->
+      <div class="bg-teal-900 text-white p-4 rounded-2xl shadow-md flex items-start space-x-3 text-xs leading-relaxed">
+        <div class="text-3xl text-teal-300"><i class="fa-solid fa-palette"></i></div>
+        <div>
+          <strong class="text-teal-200 text-sm font-bold block mb-0.5">훈데르트바서(Hundertwasser)의 자연친화 건축 철학</strong>
+          "건축은 자연과 인간이 평화롭게 만나는 장소여야 한다." 직선을 지양하고 자연스러운 곡선, 지붕 위의 나무(Tree Tenant), 태양광과 빗물을 활용한 생태 건축을 직접 그려보세요.
+        </div>
+      </div>
+
+      <div class="glass-card rounded-3xl p-4 sm:p-6 space-y-4">
+        <!-- Drawing Controls Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+          
+          <!-- Colors -->
+          <div class="flex items-center space-x-1.5">
+            <span class="text-xs font-bold text-slate-600 mr-1">색상:</span>
+            <button onclick="stg5.setColor('#10b981')" class="w-7 h-7 rounded-full bg-emerald-500 border-2 border-white shadow hover:scale-110 transition"></button>
+            <button onclick="stg5.setColor('#b45309')" class="w-7 h-7 rounded-full bg-amber-700 border-2 border-white shadow hover:scale-110 transition"></button>
+            <button onclick="stg5.setColor('#0284c7')" class="w-7 h-7 rounded-full bg-sky-600 border-2 border-white shadow hover:scale-110 transition"></button>
+            <button onclick="stg5.setColor('#e11d48')" class="w-7 h-7 rounded-full bg-rose-600 border-2 border-white shadow hover:scale-110 transition"></button>
+            <button onclick="stg5.setColor('#7c3aed')" class="w-7 h-7 rounded-full bg-purple-600 border-2 border-white shadow hover:scale-110 transition"></button>
+            <button onclick="stg5.setColor('#334155')" class="w-7 h-7 rounded-full bg-slate-700 border-2 border-white shadow hover:scale-110 transition"></button>
+          </div>
+
+          <!-- Line width -->
+          <div class="flex items-center space-x-2">
+            <span class="text-xs font-bold text-slate-600">두께:</span>
+            <input type="range" id="stg5-brush-size" min="2" max="24" value="6" onchange="stg5.setLineWidth(this.value)" class="w-20 accent-teal-600">
+          </div>
+
+          <!-- Stamps -->
+          <div class="flex items-center space-x-1.5">
+            <span class="text-xs font-bold text-slate-600 mr-1">에코 스탬프:</span>
+            <button onclick="stg5.selectStamp('tree')" title="지붕 위 나무" class="px-2.5 py-1 text-xs bg-white border border-slate-300 rounded-lg hover:bg-emerald-50">🌲</button>
+            <button onclick="stg5.selectStamp('solar')" title="태양광 패널" class="px-2.5 py-1 text-xs bg-white border border-slate-300 rounded-lg hover:bg-amber-50">☀️</button>
+            <button onclick="stg5.selectStamp('wind')" title="풍력 발전기" class="px-2.5 py-1 text-xs bg-white border border-slate-300 rounded-lg hover:bg-sky-50">🌀</button>
+            <button onclick="stg5.selectStamp('window')" title="곡선 창문" class="px-2.5 py-1 text-xs bg-white border border-slate-300 rounded-lg hover:bg-purple-50">🪟</button>
+            <button onclick="stg5.selectStamp('flower')" title="벽면 정원" class="px-2.5 py-1 text-xs bg-white border border-slate-300 rounded-lg hover:bg-rose-50">🌸</button>
+            <button onclick="stg5.selectMode('draw')" class="px-2.5 py-1 text-xs bg-teal-600 text-white font-bold rounded-lg shadow">🖌️ 붓</button>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center space-x-2">
+            <button onclick="stg5.clearCanvas()" class="px-3 py-1.5 text-xs bg-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-300">
+              🧹 지우기
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="relative w-full rounded-2xl overflow-hidden border-2 border-slate-300 shadow-inner bg-white">
+          <canvas id="canvas-stage5" width="800" height="450" class="w-full h-auto cursor-crosshair"></canvas>
+        </div>
+
+        <!-- Architecture Description & Moral Pledge Form -->
+        <div class="space-y-3 bg-teal-50/60 p-4 rounded-2xl border border-teal-200">
+          <div>
+            <label class="block text-xs font-bold text-teal-900 mb-1">🏛️ 내가 디자인한 에코 건축물 제목 및 설명</label>
+            <input type="text" id="stg5-building-title" placeholder="예: 자연과 사람이 함께 숨쉬는 지붕 숲 아파트" class="w-full px-3.5 py-2 rounded-xl border border-teal-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-medium">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-teal-900 mb-1">🌿 내가 실천할 생태 윤리 다짐 (수료증에 기록됩니다)</label>
+            <input type="text" id="stg5-building-pledge" placeholder="예: 일회용품 사용을 줄이고, 자연 환경의 소중함을 잊지 않겠습니다." class="w-full px-3.5 py-2 rounded-xl border border-teal-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs font-medium">
+          </div>
+          <button onclick="stg5.finishStage()" class="w-full py-3.5 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-black text-base rounded-xl shadow-md transition transform active:scale-95">
+            🎨 디자인 완성 및 스테이지 5 완료하기
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- STAGE MORAL REFLECTION POPUP MODAL -->
+    <div id="reflection-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-emerald-100 space-y-5 transform transition-all">
+        <div class="text-center space-y-2">
+          <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest">미션 성공! 도덕적 성찰</span>
+          <h3 id="modal-title" class="text-2xl font-black text-slate-800">사막화와 인간의 책임</h3>
+        </div>
+
+        <div id="modal-content" class="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200 text-xs sm:text-sm text-slate-700 leading-relaxed space-y-2">
+          <!-- Content injected dynamically -->
+        </div>
+
+        <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-900 font-bold flex items-center space-x-2">
+          <span class="text-xl">💡</span>
+          <span id="modal-thought">인간 중심적인 생활 방식에서 벗어나 지구 생태계와의 상생을 생각해야 합니다.</span>
+        </div>
+
+        <button onclick="app.closeModalAndProceed()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-base rounded-xl shadow-lg hover:shadow-xl transition">
+          확인 및 지도 돌아가기
+        </button>
+      </div>
+    </div>
+
+
+    <!-- 6. FINAL COMPLETION CERTIFICATE -->
+    <section id="screen-certificate" class="hidden w-full max-w-3xl mx-auto space-y-6">
+      <div class="text-center no-print space-y-2">
+        <h2 class="text-3xl font-black text-slate-800">🎉 에코 히어로 탐험 완료!</h2>
+        <p class="text-slate-600 text-sm">모든 환경 미션을 완수하고 생태 윤리 가치를 실천하였습니다.</p>
+      </div>
+
+      <!-- CERTIFICATE PRINT AREA -->
+      <div id="certificate-print-area" class="bg-gradient-to-b from-amber-50 via-white to-emerald-50 p-8 sm:p-12 rounded-3xl border-8 border-double border-amber-600/60 shadow-2xl space-y-8 relative overflow-hidden">
+        <!-- Watermark / Background Deco -->
+        <div class="absolute -right-12 -bottom-12 text-emerald-100 text-9xl opacity-40 pointer-events-none">
+          <i class="fa-solid fa-earth-americas"></i>
+        </div>
+
+        <!-- Header -->
+        <div class="text-center space-y-3">
+          <div class="text-amber-600 text-3xl tracking-widest font-black uppercase">Official Certificate</div>
+          <h1 class="cert-font text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight border-b-2 border-amber-500/40 pb-4 inline-block px-8">
+            에코 히어로 윤리 이수증
+          </h1>
+        </div>
+
+        <!-- Student Details -->
+        <div class="text-center space-y-2 text-slate-800">
+          <p class="text-sm text-slate-500 font-semibold">소속 및 성명</p>
+          <div class="text-xl sm:text-2xl font-bold">
+            <span id="cert-school" class="underline decoration-amber-400">중학교 2학년</span>
+            <span id="cert-class" class="ml-2 underline decoration-amber-400">1반</span>
+            <span id="cert-name" class="ml-3 text-2xl sm:text-3xl font-black text-emerald-800">홍길동</span> 대원
+          </div>
+        </div>
+
+        <!-- Citation Body -->
+        <p class="cert-font text-sm sm:text-base text-slate-700 leading-relaxed text-center max-w-xl mx-auto">
+          위 대원은 중학교 2학년 도덕 단원 <strong class="text-emerald-800">「생태 윤리와 환경 위기 극복」</strong> 과정에서 세계 주요 환경 위기 미션을 완수하고, 지구 생태계 보존 및 세대 간 정의를 실천하는 도덕적 탐험가로 인정받았으므로 이 수료증을 수여합니다.
+        </p>
+
+        <!-- Completed Badges Grid -->
+        <div class="grid grid-cols-5 gap-2 text-center py-2 max-w-md mx-auto">
+          <div class="bg-white p-2 rounded-xl border border-amber-200 shadow-sm text-xs font-bold text-slate-700">
+            <div class="text-lg">🌱</div>
+            <div>사막화</div>
+          </div>
+          <div class="bg-white p-2 rounded-xl border border-emerald-200 shadow-sm text-xs font-bold text-slate-700">
+            <div class="text-lg">🌲</div>
+            <div>열대림</div>
+          </div>
+          <div class="bg-white p-2 rounded-xl border border-sky-200 shadow-sm text-xs font-bold text-slate-700">
+            <div class="text-lg">🐢</div>
+            <div>해양생태</div>
+          </div>
+          <div class="bg-white p-2 rounded-xl border border-indigo-200 shadow-sm text-xs font-bold text-slate-700">
+            <div class="text-lg">👕</div>
+            <div>자원순환</div>
+          </div>
+          <div class="bg-white p-2 rounded-xl border border-teal-200 shadow-sm text-xs font-bold text-slate-700">
+            <div class="text-lg">🏛️</div>
+            <div>에코디자인</div>
+          </div>
+        </div>
+
+        <!-- Stage 5 Drawing Preview & Pledge -->
+        <div class="bg-white/80 p-4 rounded-2xl border border-emerald-200 shadow-inner max-w-lg mx-auto flex flex-col sm:flex-row items-center gap-4">
+          <div class="w-36 h-24 rounded-lg overflow-hidden border border-slate-300 bg-slate-50 flex-shrink-0">
+            <img id="cert-drawing-preview" class="w-full h-full object-cover" alt="나의 에코 건축물">
+          </div>
+          <div class="text-xs text-slate-700 space-y-1">
+            <div class="font-bold text-emerald-900" id="cert-building-title">자연과 사람이 공존하는 에코 빌딩</div>
+            <div class="text-slate-600 italic" id="cert-building-pledge">"자연을 사랑하고 친환경 삶을 실천하겠습니다."</div>
+          </div>
+        </div>
+
+        <!-- Issue Date & Sign -->
+        <div class="pt-4 text-center space-y-1">
+          <div id="cert-date" class="text-xs font-bold text-slate-500">2026년 10월 29일</div>
+          <div class="cert-font text-lg font-bold text-slate-800">지구를 구하는 도덕 탐험대 교육본부</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-center space-x-4 no-print pt-2">
+        <button onclick="window.print()" class="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-sm rounded-xl shadow-lg transition flex items-center space-x-2">
+          <i class="fa-solid fa-print"></i>
+          <span>수료증 인쇄 / PDF 저장</span>
+        </button>
+        <button onclick="app.showScreen('map')" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm rounded-xl shadow-lg transition flex items-center space-x-2">
+          <i class="fa-solid fa-map"></i>
+          <span>탐험 지도로 돌아가기</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white/80 border-t border-emerald-100 py-3 text-center text-xs text-slate-500 mt-6 no-print">
+    중학교 2학년 도덕 수업 교과 연계 콘텐츠 | 생태 윤리와 환경 위기 극복 탐험대
+  </footer>
+
+  <!-- SOUND SYNTHESIZER (WEB AUDIO API) -->
+  <script>
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      }
+      playClick() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.05);
+      }
+      playPlant() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(261.63, this.ctx.currentTime); // C4
+        osc.frequency.exponentialRampToValueAtTime(523.25, this.ctx.currentTime + 0.15); // C5
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.15);
+      }
+      playSuccess() {
+        if (this.muted) return;
+        this.init();
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.12, this.ctx.currentTime + i * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + i * 0.1 + 0.3);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.1);
+          osc.stop(this.ctx.currentTime + i * 0.1 + 0.3);
+        });
+      }
+      playSplash() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(200, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.1);
+      }
+    }
+    const sound = new SoundManager();
+  </script>
+
+  <!-- APP STATE & CORE CONTROLLER -->
+  <script>
+    const app = {
+      student: { name: '', grade: 2, classNum: 1 },
+      completedStages: [false, false, false, false, false],
+      currentStageIndex: 0,
+
+      startExploration(e) {
+        e.preventDefault();
+        sound.playClick();
+        this.student.name = document.getElementById('input-name').value || '탐험대원';
+        this.student.grade = document.getElementById('input-grade').value;
+        this.student.classNum = document.getElementById('input-class').value;
+
+        // Update Nav UI
+        document.getElementById('nav-student-name').innerText = this.student.name;
+        document.getElementById('nav-student-grade').innerText = this.student.grade;
+        document.getElementById('nav-student-class').innerText = this.student.classNum;
+        document.getElementById('header-user-info').classList.remove('hidden');
+
+        this.updateBadgesUI();
+        this.showScreen('map');
+      },
+
+      showScreen(screenId) {
+        sound.playClick();
+        const screens = ['intro', 'map', 'stage1', 'stage2', 'stage3', 'stage4', 'stage5', 'certificate'];
+        screens.forEach(s => {
+          const el = document.getElementById(`screen-${s}`);
+          if (el) el.classList.add('hidden');
+        });
+        const target = document.getElementById(`screen-${screenId}`);
+        if (target) target.classList.remove('hidden');
+
+        if (screenId === 'map') this.updateMapProgress();
+      },
+
+      toggleAudio() {
+        sound.muted = !sound.muted;
+        const btn = document.getElementById('audio-btn');
+        btn.innerHTML = sound.muted ? '<i class="fa-solid fa-volume-xmark text-slate-400"></i>' : '<i class="fa-solid fa-volume-high text-emerald-600"></i>';
+      },
+
+      loadStage(stageNum) {
+        this.currentStageIndex = stageNum;
+        this.showScreen(`stage${stageNum}`);
+        if (stageNum === 1) stg1.init();
+        if (stageNum === 2) stg2.init();
+        if (stageNum === 3) stg3.init();
+        if (stageNum === 4) stg4.init();
+        if (stageNum === 5) stg5.init();
+      },
+
+      completeStage(stageNum, modalTitle, modalContentHtml, modalThought) {
+        this.completedStages[stageNum - 1] = true;
+        this.updateBadgesUI();
+        sound.playSuccess();
+
+        // Show Reflection Modal
+        document.getElementById('modal-title').innerText = modalTitle;
+        document.getElementById('modal-content').innerHTML = modalContentHtml;
+        document.getElementById('modal-thought').innerText = modalThought;
+        document.getElementById('reflection-modal').classList.remove('hidden');
+      },
+
+      closeModalAndProceed() {
+        sound.playClick();
+        document.getElementById('reflection-modal').classList.add('hidden');
+        
+        // Check if all stages completed
+        const allDone = this.completedStages.every(Boolean);
+        if (allDone) {
+          this.showCertificate();
+        } else {
+          this.showScreen('map');
+        }
+      },
+
+      updateBadgesUI() {
+        const badgesContainer = document.getElementById('nav-badges');
+        badgesContainer.innerHTML = '';
+        const icons = ['🌱', '🌲', '🐢', '👕', '🏛️'];
+        this.completedStages.forEach((done, idx) => {
+          const span = document.createElement('span');
+          span.className = `text-xs p-1 rounded-full ${done ? 'bg-emerald-200' : 'bg-slate-200 opacity-40'}`;
+          span.title = `Stage ${idx+1}`;
+          span.innerText = icons[idx];
+          badgesContainer.appendChild(span);
+
+          // Update map card badges
+          const mapBadge = document.getElementById(`badge-stg-${idx+1}`);
+          if (mapBadge) {
+            mapBadge.className = done ? 'text-emerald-500 text-lg' : 'text-slate-300 text-lg';
+          }
+        });
+      },
+
+      updateMapProgress() {
+        const count = this.completedStages.filter(Boolean).length;
+        const percent = Math.round((count / 5) * 100);
+        document.getElementById('map-progress-text').innerText = `${count} / 5 완료 (${percent}%)`;
+        document.getElementById('map-progress-bar').style.width = `${percent}%`;
+
+        if (count === 5) {
+          document.getElementById('map-certificate-btn-container').classList.remove('hidden');
+        }
+      },
+
+      showCertificate() {
+        document.getElementById('cert-name').innerText = this.student.name;
+        document.getElementById('cert-school').innerText = `중학교 ${this.student.grade}학년`;
+        document.getElementById('cert-class').innerText = `${this.student.classNum}반`;
+        
+        const now = new Date();
+        document.getElementById('cert-date').innerText = `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일`;
+
+        // Load stage 5 drawing snapshot if available
+        const previewImg = document.getElementById('cert-drawing-preview');
+        if (stg5.dataUrl) {
+          previewImg.src = stg5.dataUrl;
+        } else {
+          previewImg.src = 'https://placehold.co/200x120/10b981/ffffff?text=Eco+Building';
+        }
+
+        const title = document.getElementById('stg5-building-title').value || '자연친화 생태 건축물';
+        const pledge = document.getElementById('stg5-building-pledge').value || '자연과 인간의 조화로운 생태 윤리를 실천하겠습니다.';
+        document.getElementById('cert-building-title').innerText = title;
+        document.getElementById('cert-building-pledge').innerText = `"${pledge}"`;
+
+        this.showScreen('certificate');
+      }
+    };
+  </script>
+
+  <!-- STAGE 1 CODE: DESERTIFICATION MINIGAME -->
+  <script>
+    const stg1 = {
+      canvas: null,
+      ctx: null,
+      selectedTool: 'seed',
+      plots: [],
+      windbreaks: [false, false, false],
+      progress: 0,
+      sandstormTimer: 0,
+      isSandstormActive: false,
+
+      init() {
+        this.canvas = document.getElementById('canvas-stage1');
+        this.ctx = this.canvas.getContext('2d');
+        this.selectedTool = 'seed';
+        this.progress = 0;
+        this.isSandstormActive = false;
+
+        // Initialize 12 soil plots
+        this.plots = [];
+        for (let row = 0; row < 3; row++) {
+          for (let col = 0; col < 4; col++) {
+            this.plots.push({
+              x: 250 + col * 130,
+              y: 120 + row * 90,
+              state: 'dry' // dry, seeded, watered
+            });
+          }
+        }
+        this.windbreaks = [false, false, false];
+
+        this.canvas.onclick = (e) => this.handleClick(e);
+        this.render();
+      },
+
+      selectTool(tool) {
+        sound.playClick();
+        this.selectedTool = tool;
+        ['seed', 'water', 'tree'].forEach(t => {
+          const btn = document.getElementById(`stg1-tool-${t}`);
+          if (t === tool) {
+            btn.className = "px-4 py-2 rounded-xl text-xs font-extrabold flex items-center space-x-1.5 bg-amber-600 text-white shadow-md border-2 border-amber-700";
+          } else {
+            btn.className = "px-4 py-2 rounded-xl text-xs font-extrabold flex items-center space-x-1.5 bg-white text-slate-700 border border-slate-300 hover:bg-slate-50";
+          }
+        });
+      },
+
+      handleClick(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        // Check Windbreak Tree slots (on the left side)
+        if (this.selectedTool === 'tree') {
+          for (let i = 0; i < 3; i++) {
+            const wx = 80;
+            const wy = 100 + i * 110;
+            if (Math.hypot(x - wx, y - wy) < 45) {
+              if (!this.windbreaks[i]) {
+                this.windbreaks[i] = true;
+                sound.playPlant();
+                this.checkProgress();
+                this.render();
+                return;
+              }
+            }
+          }
+        }
+
+        // Check soil plots
+        for (let p of this.plots) {
+          if (Math.hypot(x - p.x, y - p.y) < 40) {
+            if (this.selectedTool === 'seed' && p.state === 'dry') {
+              p.state = 'seeded';
+              sound.playPlant();
+            } else if (this.selectedTool === 'water' && p.state === 'seeded') {
+              p.state = 'watered';
+              sound.playSplash();
+            }
+            this.checkProgress();
+            this.render();
+            break;
+          }
+        }
+      },
+
+      checkProgress() {
+        const wateredCount = this.plots.filter(p => p.state === 'watered').length;
+        const treeCount = this.windbreaks.filter(Boolean).length;
+        this.progress = Math.round(((wateredCount + treeCount) / 15) * 100);
+
+        document.getElementById('stg1-progress-bar').style.width = `${this.progress}%`;
+        document.getElementById('stg1-progress-text').innerText = `${this.progress}%`;
+
+        if (this.progress >= 100) {
+          setTimeout(() => {
+            app.completeStage(
+              1,
+              '사막화 방지 & 생태계 복원 성공!',
+              `<p><strong>사막화의 주요 원인:</strong> 과도한 방목, 무분별한 산림 채벌, 지구 온난화로 인한 가뭄.</p>
+               <p class="mt-2"><strong>도덕적 성찰:</strong> 인간의 무분별한 토지 이용이 토양을 메마르게 합니다. 방풍림을 조성하고 풀을 심어 생태계를 복원하는 활동은 미래 세대를 위한 우리의 책임입니다.</p>`,
+              '지구 생태계의 사막화를 막는 첫걸음은 자원 절약과 자연 복원의 의지입니다.'
+            );
+          }, 300);
+        }
+      },
+
+      render() {
+        const ctx = this.ctx;
+        ctx.clearRect(0, 0, 800, 420);
+
+        // Sky & Sun
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, 250);
+        skyGrad.addColorStop(0, '#fde68a');
+        skyGrad.addColorStop(1, '#fef3c7');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, 800, 250);
+
+        // Sun
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(720, 60, 35, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Parched Desert Ground
+        ctx.fillStyle = '#d97706';
+        ctx.fillRect(0, 250, 800, 170);
+
+        // Render Windbreak Zone Header
+        ctx.fillStyle = '#78350f';
+        ctx.font = 'bold 12px Noto Sans KR';
+        ctx.fillText('🛡️ 방풍림 보호구역', 30, 40);
+
+        // Render Windbreak Slots
+        for (let i = 0; i < 3; i++) {
+          const wx = 80;
+          const wy = 120 + i * 95;
+          ctx.fillStyle = this.windbreaks[i] ? '#15803d' : 'rgba(217, 119, 6, 0.3)';
+          ctx.beginPath();
+          ctx.arc(wx, wy, 35, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#b45309';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          if (this.windbreaks[i]) {
+            ctx.fillStyle = '#166534';
+            ctx.beginPath();
+            ctx.moveTo(wx, wy - 30);
+            ctx.lineTo(wx - 20, wy + 15);
+            ctx.lineTo(wx + 20, wy + 15);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(wx - 4, wy + 15, 8, 15);
+          } else {
+            ctx.fillStyle = '#92400e';
+            ctx.font = '11px Noto Sans KR';
+            ctx.fillText('나무 심기', wx - 22, wy + 4);
+          }
+        }
+
+        // Render Soil Plots
+        for (let p of this.plots) {
+          ctx.beginPath();
+          ctx.ellipse(p.x, p.y, 45, 25, 0, 0, Math.PI * 2);
+          if (p.state === 'dry') {
+            ctx.fillStyle = '#b45309';
+          } else if (p.state === 'seeded') {
+            ctx.fillStyle = '#854d0e';
+          } else {
+            ctx.fillStyle = '#15803d'; // Watered grass!
+          }
+          ctx.fill();
+          ctx.strokeStyle = '#78350f';
+          ctx.stroke();
+
+          // Draw Sprouts or Flowers
+          if (p.state === 'seeded') {
+            ctx.fillStyle = '#a3e635';
+            ctx.beginPath();
+            ctx.arc(p.x, p.y - 5, 6, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (p.state === 'watered') {
+            // Blooming Grass & Flower
+            ctx.fillStyle = '#4ade80';
+            ctx.fillRect(p.x - 10, p.y - 18, 4, 18);
+            ctx.fillRect(p.x + 5, p.y - 15, 4, 15);
+            ctx.fillStyle = '#f43f5e'; // Flower top
+            ctx.beginPath();
+            ctx.arc(p.x - 8, p.y - 20, 5, 0, Math.PI * 2);
+            ctx.arc(p.x + 7, p.y - 17, 4, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- STAGE 2 CODE: RAINFOREST LOGGING MINIGAME -->
+  <script>
+    const stg2 = {
+      canvas: null,
+      ctx: null,
+      health: 50,
+      loggers: [],
+      stumps: [],
+      animId: null,
+
+      init() {
+        this.canvas = document.getElementById('canvas-stage2');
+        this.ctx = this.canvas.getContext('2d');
+        this.health = 50;
+
+        // Loggers array
+        this.loggers = [
+          { x: 700, y: 150, speed: 0.8, converted: false },
+          { x: 750, y: 260, speed: 0.6, converted: false },
+          { x: 680, y: 340, speed: 1.0, converted: false }
+        ];
+
+        // Tree stumps
+        this.stumps = [
+          { x: 220, y: 280, planted: false },
+          { x: 380, y: 320, planted: false }
+        ];
+
+        this.canvas.onclick = (e) => this.handleClick(e);
+        this.loop();
+      },
+
+      handleClick(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        // Convert Loggers
+        for (let l of this.loggers) {
+          if (!l.converted && Math.hypot(x - l.x, y - l.y) < 35) {
+            l.converted = true;
+            sound.playSuccess();
+            this.health = Math.min(100, this.health + 15);
+            this.updateUI();
+            return;
+          }
+        }
+
+        // Replant Stumps
+        for (let s of this.stumps) {
+          if (!s.planted && Math.hypot(x - s.x, y - s.y) < 35) {
+            s.planted = true;
+            sound.playPlant();
+            this.health = Math.min(100, this.health + 15);
+            this.updateUI();
+            return;
+          }
+        }
+      },
+
+      updateUI() {
+        document.getElementById('stg2-progress-bar').style.width = `${this.health}%`;
+        document.getElementById('stg2-progress-text').innerText = `${this.health}%`;
+
+        if (this.health >= 100) {
+          cancelAnimationFrame(this.animId);
+          setTimeout(() => {
+            app.completeStage(
+              2,
+              '열대림 보존 & 세대 간 정의 실천!',
+              `<p><strong>지구의 허파 아마존:</strong> 열대림의 무분별한 벌목은 기후 변화를 가속화하고 생물 다양성을 파괴합니다.</p>
+               <p class="mt-2"><strong>도덕적 성찰 (세대 간 정의):</strong> 현재 세대가 자원을 남용하면 미래 세대는 쾌적한 환경에서 살 권리를 침해받습니다. 환경 보원과의 연대로 숲을 지키는 것은 세대 간 윤리의 핵심입니다.</p>`,
+              '미래 세대를 위해 지구의 허파 열대림을 지켜냅시다.'
+            );
+          }, 300);
+        }
+      },
+
+      loop() {
+        const ctx = this.ctx;
+        ctx.clearRect(0, 0, 800, 420);
+
+        // Lush Forest Background
+        ctx.fillStyle = '#065f46';
+        ctx.fillRect(0, 0, 800, 420);
+
+        // Ancient Trees Canopy
+        for (let i = 0; i < 5; i++) {
+          ctx.fillStyle = '#047857';
+          ctx.beginPath();
+          ctx.arc(80 + i * 140, 120, 80, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#064e3b';
+          ctx.fillRect(70 + i * 140, 180, 20, 150);
+        }
+
+        // Stumps
+        for (let s of this.stumps) {
+          ctx.fillStyle = '#78350f';
+          ctx.fillRect(s.x - 15, s.y - 10, 30, 20);
+          if (s.planted) {
+            ctx.fillStyle = '#34d399';
+            ctx.beginPath();
+            ctx.arc(s.x, s.y - 25, 18, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#059669';
+            ctx.font = '10px Noto Sans KR';
+            ctx.fillText('묘목', s.x - 10, s.y - 30);
+          } else {
+            ctx.fillStyle = '#fef08a';
+            ctx.font = '10px Noto Sans KR';
+            ctx.fillText('묘목심기', s.x - 18, s.y + 25);
+          }
+        }
+
+        // Move & Render Loggers / Forest Rangers
+        for (let l of this.loggers) {
+          if (!l.converted) {
+            l.x -= l.speed;
+            if (l.x < 150) l.x = 780; // Loop back
+          }
+
+          ctx.beginPath();
+          ctx.arc(l.x, l.y, 20, 0, Math.PI * 2);
+          ctx.fillStyle = l.converted ? '#10b981' : '#ef4444';
+          ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 12px Noto Sans KR';
+          if (l.converted) {
+            ctx.fillText('🛡️ 감시원', l.x - 22, l.y + 4);
+          } else {
+            ctx.fillText('🪓 벌목꾼', l.x - 22, l.y + 4);
+          }
+        }
+
+        if (this.health < 100) {
+          this.animId = requestAnimationFrame(() => this.loop());
+        }
+      }
+    };
+  </script>
+
+  <!-- STAGE 3 CODE: OCEAN POLLUTION & TURTLE RESCUE -->
+  <script>
+    const stg3 = {
+      canvas: null,
+      ctx: null,
+      phase: 1, // 1: trash cleanup, 2: turtle rescue
+      trashes: [],
+      turtleOilPatches: 4,
+      isNetCut: false,
+      selectedTool: 'scissors',
+
+      init() {
+        this.canvas = document.getElementById('canvas-stage3');
+        this.ctx = this.canvas.getContext('2d');
+        this.phase = 1;
+        this.turtleOilPatches = 4;
+        this.isNetCut = false;
+        this.selectedTool = 'scissors';
+
+        // 8 floating ocean trashes
+        this.trashes = [
+          { x: 150, y: 100, label: '🥤 페트병' },
+          { x: 320, y: 180, label: '🛍️ 비닐봉지' },
+          { x: 500, y: 120, label: '🥫 캔' },
+          { x: 650, y: 220, label: '📦 스티로폼' },
+          { x: 220, y: 280, label: '🥤 플라스틱' },
+          { x: 420, y: 320, label: '🛍️ 비닐' },
+          { x: 580, y: 300, label: '🪢 빨대' },
+          { x: 120, y: 350, label: '🍾 유리병' }
+        ];
+
+        document.getElementById('stg3-phase-title').innerHTML = '<i class="fa-solid fa-broom mr-1"></i> 1단계: 해양 부유 쓰레기 수거 (남은 쓰레기: <span id="stg3-trash-count">8</span>개)';
+        document.getElementById('stg3-tool-controls').classList.add('hidden');
+
+        this.canvas.onclick = (e) => this.handleClick(e);
+        this.render();
+      },
+
+      setTool(t) {
+        sound.playClick();
+        this.selectedTool = t;
+        ['scissors', 'sponge', 'feed'].forEach(tool => {
+          const btn = document.getElementById(`stg3-btn-${tool}`);
+          if (tool === t) {
+            btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-sky-600 text-white shadow";
+          } else {
+            btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-700 border hover:bg-sky-50";
+          }
+        });
+      },
+
+      handleClick(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        if (this.phase === 1) {
+          // Remove floating trash
+          for (let i = this.trashes.length - 1; i >= 0; i--) {
+            const t = this.trashes[i];
+            if (Math.hypot(x - t.x, y - t.y) < 35) {
+              this.trashes.splice(i, 1);
+              sound.playSplash();
+              document.getElementById('stg3-trash-count').innerText = this.trashes.length;
+              if (this.trashes.length === 0) {
+                this.phase = 2;
+                document.getElementById('stg3-phase-title').innerHTML = '🐢 2단계: 기름에 덮인 바다거북 구출 및 세척';
+                document.getElementById('stg3-tool-controls').classList.remove('hidden');
+              }
+              this.render();
+              return;
+            }
+          }
+        } else if (this.phase === 2) {
+          // Turtle Rescue Interactions
+          if (this.selectedTool === 'scissors' && !this.isNetCut) {
+            this.isNetCut = true;
+            sound.playSuccess();
+          } else if (this.selectedTool === 'sponge' && this.turtleOilPatches > 0) {
+            this.turtleOilPatches--;
+            sound.playSplash();
+          } else if (this.selectedTool === 'feed' && this.isNetCut && this.turtleOilPatches === 0) {
+            sound.playSuccess();
+            setTimeout(() => {
+              app.completeStage(
+                3,
+                '해양 생태계 보존 & 바다거북 구출!',
+                `<p><strong>해양 오염의 심각성:</strong> 무심코 버린 플라스틱과 유류 유출 사고로 매년 수십만 마리의 바다거북과 해양 생물이 고통받고 있습니다.</p>
+                 <p class="mt-2"><strong>도덕적 성찰 (생명 존중):</strong> 모든 생명체는 고유한 생명 가치를 가집니다. 플라스틱 쓰레기를 줄이고 해양 생태계를 지키는 것은 생명 존중 윤리의 실천입니다.</p>`,
+                '일회용 플라스틱을 줄여 바다 생물들의 터전을 지켜주세요.'
+              );
+            }, 300);
+          }
+          this.render();
+        }
+      },
+
+      render() {
+        const ctx = this.ctx;
+        ctx.clearRect(0, 0, 800, 420);
+
+        // Ocean Ocean Blue Gradient
+        const waterGrad = ctx.createLinearGradient(0, 0, 0, 420);
+        waterGrad.addColorStop(0, '#0284c7');
+        waterGrad.addColorStop(1, '#075985');
+        ctx.fillStyle = waterGrad;
+        ctx.fillRect(0, 0, 800, 420);
+
+        if (this.phase === 1) {
+          // Render Floating Trashes
+          for (let t of this.trashes) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath();
+            ctx.arc(t.x, t.y, 25, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '11px Noto Sans KR';
+            ctx.fillText(t.label, t.x - 22, t.y + 4);
+          }
+        } else {
+          // Render Sea Turtle
+          ctx.save();
+          ctx.translate(400, 210);
+
+          // Turtle Shell
+          ctx.fillStyle = '#15803d';
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 110, 80, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#166534';
+          ctx.lineWidth = 4;
+          ctx.stroke();
+
+          // Head & Flippers
+          ctx.fillStyle = '#22c55e';
+          ctx.beginPath();
+          ctx.arc(-130, 0, 30, 0, Math.PI * 2); // Head
+          ctx.fill();
+          // Eyes
+          ctx.fillStyle = '#000';
+          ctx.beginPath();
+          ctx.arc(-140, -8, 4, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Flippers
+          ctx.fillStyle = '#16a34a';
+          ctx.fillRect(-40, -110, 30, 40);
+          ctx.fillRect(-40, 70, 30, 40);
+
+          // Net overlay if not cut
+          if (!this.isNetCut) {
+            ctx.strokeStyle = '#f87171';
+            ctx.lineWidth = 3;
+            for (let i = -60; i <= 60; i += 20) {
+              ctx.beginPath(); ctx.moveTo(i, -60); ctx.lineTo(i, 60); ctx.stroke();
+              ctx.beginPath(); ctx.moveTo(-60, i); ctx.lineTo(60, i); ctx.stroke();
+            }
+            ctx.fillStyle = '#ef4444';
+            ctx.font = 'bold 12px Noto Sans KR';
+            ctx.fillText('⚠️ 그물 엉킴 (가위 사용)', -60, -90);
+          }
+
+          // Oil patches if any left
+          if (this.turtleOilPatches > 0) {
+            ctx.fillStyle = '#1e293b';
+            for (let p = 0; p < this.turtleOilPatches; p++) {
+              ctx.beginPath();
+              ctx.arc(-40 + p * 30, -20 + (p % 2) * 30, 18, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 12px Noto Sans KR';
+            ctx.fillText(`⚠️ 기름 얼룩 ${this.turtleOilPatches}개 남음 (스펀지 사용)`, -80, 110);
+          } else if (this.isNetCut) {
+            ctx.fillStyle = '#fef08a';
+            ctx.font = 'bold 14px Noto Sans KR';
+            ctx.fillText('✨ 완전 깨끗해졌어요! 먹이를 주면 바다로 돌아갑니다.', -140, 110);
+          }
+
+          ctx.restore();
+        }
+      }
+    };
+  </script>
+
+  <!-- STAGE 4 CODE: TRASH ISLAND & FAST FASHION -->
+  <script>
+    const stg4 = {
+      currentIndex: 0,
+      score: 0,
+      items: [
+        {
+          title: '단추 한 개 빠진 겨울 코트',
+          desc: '약간의 수선만 거치면 충분히 입을 수 있는 양호한 상태입니다.',
+          type: 'donate',
+          icon: '🧥'
+        },
+        {
+          title: '심하게 찢어지고 오염된 청바지',
+          desc: '더 이상 입기 힘드나 천을 재활용하여 에코백으로 만들 수 있습니다.',
+          type: 'upcycle',
+          icon: '👖'
+        },
+        {
+          title: 'SNS에서 유행하는 5번째 비슷한 스타일 티셔츠',
+          desc: '이미 집에 비슷한 옷이 많으나 충동 구매 욕구가 일어납니다.',
+          type: 'reject',
+          icon: '🛍️'
+        },
+        {
+          title: '사이즈가 약간 작아진 깨끗한 패딩',
+          desc: '동생이나 필요한 이웃에게 전달하면 요용하게 쓰일 수 있습니다.',
+          type: 'donate',
+          icon: '🥼'
+        },
+        {
+          title: '구멍 난 헌 운동화',
+          desc: '신을 수는 없지만 업사이클링 소재나 화분 장식으로 변신 가능합니다.',
+          type: 'upcycle',
+          icon: '👟'
+        },
+        {
+          title: '할인 행사 광고를 보고 사고 싶은 화려한 모자',
+          desc: '실제로는 거의 쓰지 않을 것 같은 충동 소비 아이템입니다.',
+          type: 'reject',
+          icon: '🧢'
+        }
+      ],
+
+      init() {
+        this.currentIndex = 0;
+        this.score = 0;
+        this.renderItem();
+      },
+
+      renderItem() {
+        if (this.currentIndex >= this.items.length) {
+          app.completeStage(
+            4,
+            '패스트 패션 극복 & 자원 순환 완수!',
+            `<p><strong>패스트 패션의 환경 영향:</strong> 옷 한 벌을 만드는 데 막대한 수자원이 소모되며, 매년 수천만 톤의 의류 쓰레기가 태평양 쓰레기섬을 만듭니다.</p>
+             <p class="mt-2"><strong>도덕적 성찰 (절제와 자원 순환):</strong> 과도한 소비 욕구를 절제하고, 기부와 업사이클링을 실천하는 것은 지구 환경을 지키는 소박하지만 위대한 윤리적 행동입니다.</p>`,
+            '의류 소비를 절제하고 순환 윤리를 생활화합시다.'
+          );
+          return;
+        }
+
+        const item = this.items[this.currentIndex];
+        document.getElementById('stg4-item-icon').innerText = item.icon;
+        document.getElementById('stg4-item-title').innerText = item.title;
+        document.getElementById('stg4-item-desc').innerText = item.desc;
+
+        const progress = Math.round((this.currentIndex / this.items.length) * 100);
+        document.getElementById('stg4-progress-bar').style.width = `${progress}%`;
+        document.getElementById('stg4-score-text').innerText = `${this.currentIndex} / ${this.items.length} 분류 완료`;
+      },
+
+      sortItem(chosenType) {
+        const item = this.items[this.currentIndex];
+        if (chosenType === item.type) {
+          sound.playSuccess();
+          this.score++;
+        } else {
+          sound.playClick();
+        }
+        this.currentIndex++;
+        this.renderItem();
+      }
+    };
+  </script>
+
+  <!-- STAGE 5 CODE: HUNDERTWASSER ECO ARCHITECTURE STUDIO -->
+  <script>
+    const stg5 = {
+      canvas: null,
+      ctx: null,
+      isDrawing: false,
+      currentColor: '#10b981',
+      lineWidth: 6,
+      currentMode: 'draw', // 'draw' or stamp type
+      dataUrl: null,
+
+      init() {
+        this.canvas = document.getElementById('canvas-stage5');
+        this.ctx = this.canvas.getContext('2d');
+        this.currentMode = 'draw';
+        this.currentColor = '#10b981';
+        this.lineWidth = 6;
+
+        // Draw initial blank building backdrop
+        this.clearCanvas();
+
+        this.canvas.onmousedown = (e) => this.startDraw(e);
+        this.canvas.onmousemove = (e) => this.draw(e);
+        this.canvas.onmouseup = () => this.stopDraw();
+
+        this.canvas.ontouchstart = (e) => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          this.startDraw(touch);
+        };
+        this.canvas.ontouchmove = (e) => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          this.draw(touch);
+        };
+        this.canvas.ontouchend = () => this.stopDraw();
+      },
+
+      setColor(c) {
+        sound.playClick();
+        this.currentColor = c;
+        this.currentMode = 'draw';
+      },
+
+      setLineWidth(w) {
+        this.lineWidth = w;
+      },
+
+      selectStamp(stamp) {
+        sound.playClick();
+        this.currentMode = stamp;
+      },
+
+      selectMode(m) {
+        sound.playClick();
+        this.currentMode = m;
+      },
+
+      clearCanvas() {
+        sound.playClick();
+        const ctx = this.ctx;
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(0, 0, 800, 450);
+
+        // Soft ground and sky guide
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(0, 380, 800, 70);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '12px Noto Sans KR';
+        ctx.fillText('🌱 이 공간에 자연과 어우러지는 곡선형 에코 건물을 자유롭게 그려보세요.', 200, 415);
+      },
+
+      startDraw(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        if (this.currentMode !== 'draw') {
+          // Place Stamp
+          this.drawStamp(x, y, this.currentMode);
+          sound.playPlant();
+          return;
+        }
+
+        this.isDrawing = true;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, y);
+      },
+
+      draw(e) {
+        if (!this.isDrawing || this.currentMode !== 'draw') return;
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        this.ctx.lineTo(x, y);
+        this.ctx.strokeStyle = this.currentColor;
+        this.ctx.lineWidth = this.lineWidth;
+        this.ctx.lineCap = 'round';
+        this.ctx.stroke();
+      },
+
+      stopDraw() {
+        this.isDrawing = false;
+      },
+
+      drawStamp(x, y, stamp) {
+        const ctx = this.ctx;
+        ctx.font = '32px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        let emoji = '🌲';
+        if (stamp === 'solar') emoji = '☀️';
+        if (stamp === 'wind') emoji = '🌀';
+        if (stamp === 'window') emoji = '🪟';
+        if (stamp === 'flower') emoji = '🌸';
+
+        ctx.fillText(emoji, x, y);
+      },
+
+      finishStage() {
+        this.dataUrl = this.canvas.toDataURL();
+        app.completeStage(
+          5,
+          '훈데르트바서 에코 디자인 완성!',
+          `<p><strong>훈데르트바서의 친환경 디자인:</strong> 자연에는 직선이 존재하지 않음을 강조하고, 건축물이 자연과의 화해 도구가 되어야 한다고 주장했습니다.</p>
+           <p class="mt-2"><strong>도덕적 성찰:</strong> 우리의 생활 공간과 도시 디자인에 생태적 가치를 담아내는 것은 지속 가능한 미래를 만드는 도덕적 첫걸음입니다.</p>`,
+          '자연과 사람이 조화롭게 공존하는 친환경 삶을 실천해 나갑시다.'
+        );
+      }
+    };
+  </script>
+
+</body>
+</html>
